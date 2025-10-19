@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add MySQL User</title>
+  </head>
+  <body>
+    <h1>Add User</h1>
+    <button onclick="window.location.href='dashboard.html'">
+      Back to Dashboard
+    </button>
+    <form id="addUserForm">
+      <input type="text" id="newUser" placeholder="New Username" required />
+      <input type="password" id="newPass" placeholder="New Password" required />
+      <button type="submit">Create User</button>
+    </form>
+
+    <script>
+      const addUserForm = document.getElementById("addUserForm");
+      const newUser = document.getElementById("newUser");
+      const newPass = document.getElementById("newPass");
+
+      addUserForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const username = localStorage.getItem("username");
+        const password = localStorage.getItem("password");
+        const newUserVal = newUser.value;
+        const newPassVal = newPass.value;
+
+        const response = await fetch("http://localhost:3000/create-user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            username,
+            password,
+            newUser: newUserVal,
+            newPass: newPassVal,
+          }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert(result.message);
+          newUser.value = "";
+          newPass.value = "";
+        } else {
+          alert(result.message);
+        }
+      });
+    </script>
+  </body>
+</html>

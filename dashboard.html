@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <h1>Dashboard</h1>
+    <p>Logged in as: <span id="user"></span></p>
+
+    <button id="listBtn">Load Databases & Users</button>
+    <button onclick="window.location.href='add_database.html'">
+      Add Database
+    </button>
+    <button onclick="window.location.href='add_user.html'">Add user</button>
+    <button onclick="window.location.href='create_table.html'">
+      Add Table
+    </button>
+
+    <div class="section">
+      <h2>Databases</h2>
+      <ul id="dbList"></ul>
+    </div>
+
+    <div class="section">
+      <h2>Users</h2>
+      <ul id="userList"></ul>
+    </div>
+
+    <script>
+      const user = localStorage.getItem("username");
+      const pass = localStorage.getItem("password");
+
+      if (!user || !pass) {
+        window.location.href = "index.html";
+      }
+
+      document.getElementById("user").textContent = user;
+
+      const listBtn = document.getElementById("listBtn");
+      const dbList = document.getElementById("dbList");
+      const userList = document.getElementById("userList");
+
+      listBtn.addEventListener("click", async () => {
+        try {
+          const response = await fetch("http://localhost:3000/list-databases", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username: user, password: pass }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            // Clear lists
+            dbList.innerHTML = "";
+            userList.innerHTML = "";
+
+            // Databases
+            result.databases.forEach((row) => {
+              const li = document.createElement("li");
+              li.textContent = row.Database;
+              dbList.appendChild(li);
+            });
+
+            // Users
+            result.users.forEach((row) => {
+              const li = document.createElement("li");
+              li.textContent = `${row.User} @ ${row.Host}`;
+              userList.appendChild(li);
+            });
+          } else {
+            alert(result.message);
+          }
+        } catch (err) {
+          console.error(err);
+          alert("Error loading data: " + err.message);
+        }
+      });
+    </script>
+  </body>
+</html>

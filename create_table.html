@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Create Table</title>
+  </head>
+  <body>
+    <h1>Create Table</h1>
+    <button onclick="window.location.href='dashboard.html'">
+      Back to Dashboard
+    </button>
+
+    <form id="createTableForm">
+      <input type="text" id="dbName" placeholder="Database Name" required />
+      <input type="text" id="tableName" placeholder="Table Name" required />
+      <button type="submit">Create Table</button>
+    </form>
+
+    <script>
+      const createTableForm = document.getElementById("createTableForm");
+      const dbNameInput = document.getElementById("dbName");
+      const tableNameInput = document.getElementById("tableName");
+
+      createTableForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const dbName = dbNameInput.value.trim();
+        const tableName = tableNameInput.value.trim();
+        const username = localStorage.getItem("username");
+        const password = localStorage.getItem("password");
+
+        if (!dbName || !tableName) {
+          alert("Please enter both database and table names");
+          return;
+        }
+
+        try {
+          const response = await fetch("http://localhost:3000/create-table", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ dbName, tableName, username, password }),
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert(result.message);
+            dbNameInput.value = "";
+            tableNameInput.value = "";
+          } else {
+            alert(result.message);
+          }
+        } catch (error) {
+          alert("Error connecting to the server");
+          console.error(error);
+        }
+      });
+    </script>
+  </body>
+</html>

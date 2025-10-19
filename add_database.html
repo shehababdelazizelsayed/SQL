@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Add Database</title>
+  </head>
+  <body>
+    <h1>Add Database</h1>
+    <form id="addDatabase">
+      <input type="text" id="dbName" placeholder="Database Name" required />
+      <button type="submit">Create Database</button>
+      <button onclick="window.location.href='dashboard.html'">
+        Back to Dashboard
+      </button>
+    </form>
+
+    <script>
+      const addDatabase = document.getElementById("addDatabase");
+      const dbName = document.getElementById("dbName");
+
+      addDatabase.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const dbNames = dbName.value;
+        const username = localStorage.getItem("username");
+        const password = localStorage.getItem("password");
+
+        const response = await fetch("http://localhost:3000/create-database", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ dbNames, username, password }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          alert("Database created successfully");
+          dbNameInput.value = "";
+        } else {
+          alert(result.message);
+        }
+      });
+    </script>
+  </body>
+</html>
